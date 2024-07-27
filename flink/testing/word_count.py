@@ -1,13 +1,14 @@
 from pyflink.datastream import StreamExecutionEnvironment
 from pyflink.table import StreamTableEnvironment, DataTypes
-from pyflink.table.descriptors import Schema, FileSystem, OldCsv
+from pyflink.table.descriptors import Schema, OldCsv
+from pyflink.table.descriptors import FileSystem as FileSystemDescriptor
 
 def main():
     env = StreamExecutionEnvironment.get_execution_environment()
     t_env = StreamTableEnvironment.create(env)
 
     # Define the source schema
-    t_env.connect(FileSystem().path('s3://streaming-demo-project/input.txt')) \
+    t_env.connect(FileSystemDescriptor().path('s3://streaming-demo-project/input.txt')) \
         .with_format(OldCsv()
                      .field('word', DataTypes.STRING())) \
         .with_schema(Schema()
@@ -15,7 +16,7 @@ def main():
         .create_temporary_table('source')
 
     # Define the sink schema
-    t_env.connect(FileSystem().path('s3://streaming-demo-project/output')) \
+    t_env.connect(FileSystemDescriptor().path('s3://streaming-demo-project/output')) \
         .with_format(OldCsv()
                      .field_delimiter('\t')
                      .field('word', DataTypes.STRING())
