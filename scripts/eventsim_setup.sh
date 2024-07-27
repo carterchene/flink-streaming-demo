@@ -5,7 +5,7 @@ docker build -t events:1.0 .
 
 echo "Running Eventsim in detached mode..."
 docker run -itd \
-  --network kafka-network \
+  --network kafka_kafka-network \
   --name million_events \
   --memory="5.5g" \
   --memory-swap="7g" \
@@ -17,7 +17,7 @@ docker run -itd \
     --nusers 1000000 \
     --growth-rate 10 \
     --userid 1 \
-    --kafkaBrokerList localhost:9092 \
+    --kafkaBrokerList broker:29092 \
     --randomseed 1 \
     --continuous
 
