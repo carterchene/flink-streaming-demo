@@ -11,8 +11,7 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     networks: 
-      kafka-network: 
-        driver: bridge
+      - kafka-network
 
   broker:
     image: confluentinc/cp-server:5.4.0
@@ -37,8 +36,7 @@ services:
       CONFLUENT_METRICS_ENABLE: "true"
       CONFLUENT_SUPPORT_CUSTOMER_ID: "anonymous"
     networks: 
-      kafka-network: 
-        driver: bridge
+      - kafka-network
 
   kafka-tools:
     image: confluentinc/cp-kafka:5.4.0
@@ -60,8 +58,7 @@ services:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper:2181"
     networks: 
-      kafka-network: 
-        driver: bridge
+      - kafka-network
 
   control-center:
     image: confluentinc/cp-enterprise-control-center:5.4.0
@@ -83,5 +80,8 @@ services:
       CONFLUENT_METRICS_TOPIC_REPLICATION: 1
       PORT: 9021
     networks: 
-      kafka-network: 
-        driver: bridge
+      - kafka-network
+
+  networks:
+    kafka-network:
+      driver: bridge
