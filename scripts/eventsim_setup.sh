@@ -5,7 +5,7 @@ docker build -t events:1.0 .
 
 echo "Running Eventsim in detached mode..."
 docker run -itd \
-  --network host \
+  --network kafka-network \
   --name million_events \
   --memory="5.5g" \
   --memory-swap="7g" \
