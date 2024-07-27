@@ -10,7 +10,10 @@ bootstrap_servers = ['localhost:9092']
 # Create a Kafka producer
 producer = KafkaProducer(
     bootstrap_servers=bootstrap_servers,
-    value_serializer=lambda v: json.dumps(v).encode('utf-8')
+    value_serializer=lambda v: json.dumps(v).encode('utf-8'),
+    request_timeout_ms = 30000,
+    security_protocol = 'PLAINTEXT'
+    
 )
 
 # List of sample user activities
@@ -40,7 +43,7 @@ try:
         future = producer.send(topic, value=message)
         
         # Block for 'synchronous' sends
-        record_metadata = future.get(timeout=10)
+        record_metadata = future.get(timeout=30)
         
         print(f"Sent message: {message}")
         print(f"Topic: {record_metadata.topic}")
