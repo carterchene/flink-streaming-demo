@@ -1,35 +1,81 @@
-import os
-from streaming_functions import create_or_get_flink_env, create_kafka_read_stream, process_stream, create_file_write_stream
+from pyflink.datastream import StreamExecutionEnvironment
+from pyflink.table import StreamTableEnvironment
+from pyflink.table.expressions import col, lit
 
-# Kafka Topics
-LISTEN_EVENTS_TOPIC = "listen_events"
-PAGE_VIEW_EVENTS_TOPIC = "page_view_events"
-AUTH_EVENTS_TOPIC = "auth_events"
+# set the streaming environment
+s_env = StreamExecutionEnvironment.get_execution_environment()
+# add the kafka connector 
+s_env.add_jars("file:///C:/Users/Carter%20Dakota/portfolio/downloads/flink-sql-connector-kafka-3.2.0-1.19.jar")
+t_env = StreamTableEnvironment.create(s_env)
 
-KAFKA_PORT = "9092"
-KAFKA_ADDRESS = os.getenv("KAFKA_ADDRESS", 'localhost')
-AWS_S3_BUCKET = os.getenv("AWS_S3_BUCKET", 'streaming-demo')
-S3_STORAGE_PATH = f's3://{AWS_S3_BUCKET}'
+# set the source
+t_env.execute_sql("""
+    CREATE TABLE kafka_source (
+        `song` string ,
+        `artist` string ,
+        `duration` double ,
+        `ts` bigint ,
+        `sessionId` INTEGER ,
+        `auth` string ,
+        `level` string ,
+        `itemInSession` INTEGER ,
+        `city` string ,
+        `zip` string ,
+        `state` string ,
+        `userAgent` string ,
+        `lon` double ,
+        `lat` double ,
+        `userId` integer ,
+        `lastName` string ,
+        `firstName` string ,
+        `gender` string ,
+        `registration` BIGINT
+    ) WITH (
+        'connector' = 'kafka',
+        'topic' = 'listen_events',
+        'properties.bootstrap.servers' = '3.96.62.156:9092',
+        'properties.group.id' = 'flink-consumer-group-1', 
+        'scan.startup.mode' = 'earliest-offset',
+        'format' = 'json'
+    )
+""")
 
-# Initialize a Flink Stream Table Environment
-t_env = create_or_get_flink_env('Eventsim Stream')
+t_env.execute_sql("""
+    CREATE TABLE listen_events_s3 (
+        `song` string ,
+        `artist` string ,
+        `duration` double ,
+        `ts` bigint ,
+        `sessionId` INTEGER ,
+        `auth` string ,
+        `level` string ,
+        `itemInSession` INTEGER ,
+        `city` string ,
+        `zip` string ,
+        `state` string ,
+        `userAgent` string ,
+        `lon` double ,
+        `lat` double ,
+        `userId` integer ,
+        `lastName` string ,
+        `firstName` string ,
+        `gender` string ,
+        `registration` BIGINT
+        ) WITH (
+            'connector' = 'filesystem',
+            'path' = 's3://streaming-demo-project/outputs',
+            'format' = 'parquet',
+            'sink.rolling-policy.file-size' = '128MB',
+            'sink.rolling-policy.rollover-interval' = '15 min',
+            'sink.rolling-policy.check-interval' = '1 min',
+            'partition.time-extractor.timestamp-pattern'='$year-$month-$day 00:00:00',
+            'sink.partition-commit.delay'='1 h',
+            'sink.partition-commit.policy.kind'='success-file'
+        )
+""")
 
-# Listen events stream
-listen_events = create_kafka_read_stream(t_env, KAFKA_ADDRESS, KAFKA_PORT, LISTEN_EVENTS_TOPIC)
-listen_events = process_stream(listen_events, schemas[LISTEN_EVENTS_TOPIC], LISTEN_EVENTS_TOPIC)
-
-# Page view stream
-page_view_events = create_kafka_read_stream(t_env, KAFKA_ADDRESS, KAFKA_PORT, PAGE_VIEW_EVENTS_TOPIC)
-page_view_events = process_stream(page_view_events, schemas[PAGE_VIEW_EVENTS_TOPIC], PAGE_VIEW_EVENTS_TOPIC)
-
-# Auth stream
-auth_events = create_kafka_read_stream(t_env, KAFKA_ADDRESS, KAFKA_PORT, AUTH_EVENTS_TOPIC)
-auth_events = process_stream(auth_events, schemas[AUTH_EVENTS_TOPIC], AUTH_EVENTS_TOPIC)
-
-# Write a file to storage every 2 minutes in Parquet format
-create_file_write_stream(listen_events, f"{S3_STORAGE_PATH}/{LISTEN_EVENTS_TOPIC}", f"{S3_STORAGE_PATH}/checkpoint/{LISTEN_EVENTS_TOPIC}")
-create_file_write_stream(page_view_events, f"{S3_STORAGE_PATH}/{PAGE_VIEW_EVENTS_TOPIC}", f"{S3_STORAGE_PATH}/checkpoint/{PAGE_VIEW_EVENTS_TOPIC}")
-create_file_write_stream(auth_events, f"{S3_STORAGE_PATH}/{AUTH_EVENTS_TOPIC}", f"{S3_STORAGE_PATH}/checkpoint/{AUTH_EVENTS_TOPIC}")
-
-# Execute the Flink pipeline
-t_env.execute("Stream Processing")
+t_env.execute_sql("""
+        INSERT INTO listen_events_s3
+        SELECT *
+        FROM kafka_source; 
+""").wait()
