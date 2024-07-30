@@ -5,7 +5,8 @@ from pyflink.table.expressions import col, lit
 # set the streaming environment
 s_env = StreamExecutionEnvironment.get_execution_environment()
 # add the kafka connector 
-s_env.add_jars("file:///C:/Users/Carter%20Dakota/portfolio/downloads/flink-sql-connector-kafka-3.2.0-1.19.jar")
+# s_env.add_jars("file:///C:/Users/Carter%20Dakota/portfolio/downloads/flink-sql-connector-kafka-3.2.0-1.19.jar")
+s_env.add_jars("s3://streaming-demo-project/jars/flink-sql-connector-kafka-3.2.0-1.19.jar")
 t_env = StreamTableEnvironment.create(s_env)
 
 # set the source
@@ -33,7 +34,7 @@ t_env.execute_sql("""
     ) WITH (
         'connector' = 'kafka',
         'topic' = 'listen_events',
-        'properties.bootstrap.servers' = '3.96.62.156:9092',
+        'properties.bootstrap.servers' = '15.223.4.248:9092',
         'properties.group.id' = 'flink-consumer-group-1', 
         'scan.startup.mode' = 'earliest-offset',
         'format' = 'json'
