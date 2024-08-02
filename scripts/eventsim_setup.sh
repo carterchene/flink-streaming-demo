@@ -1,4 +1,4 @@
-cd ~/data-engineer-project/realtime-anomaly-detection/eventsim
+cd ~/realtime-anomaly-detection/eventsim
 
 echo "Building Eventsim Image..."
 docker build -t events:1.0 .
