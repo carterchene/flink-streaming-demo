@@ -3,9 +3,11 @@ from dagster_dbt import DbtCliResource, dbt_assets
 import boto3 
 import os
 import psycopg2
+from dotenv import load_dotenv
 
 from .project import streaming_project_demo_project
 
+load_dotenv()
 S3_BUCKET = os.getenv('S3_BUCKET')
 ACCOUNT_ID = os.getenv('AWS_ACCOUNT_ID')
 REDSHIFT_IAM = os.getenv('REDSHIFT_IAM')
@@ -17,10 +19,10 @@ def streaming_project_demo_dbt_assets(context: AssetExecutionContext, dbt: DbtCl
 @asset(description='Load from s3 parquet to redshift')
 def s3_to_redshift() -> MaterializeResult:
     conn = psycopg2.connect(
-        dbname='dev',
-        user='your_username',
-        password='your_password',
-        host='your_redshift_cluster_endpoint',
+        dbname=os.getenv('DB_NAME'),
+        user=os.getenv('DB_USER'),
+        password=os.getenv('DB_PASSWORD'),
+        host= os.getenv('REDSHIFT_HOST'),
         port='5439'
     )
     cursor = conn.cursor()
