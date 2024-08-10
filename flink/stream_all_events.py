@@ -13,7 +13,8 @@ def construct_insert_statement(source, sink) -> str:
                 *, 
                 DATE_FORMAT(TO_TIMESTAMP(FROM_UNIXTIME(`ts`/1000)), 'yyyy') as `year`,
                 DATE_FORMAT(TO_TIMESTAMP(FROM_UNIXTIME(`ts`/1000)), 'MM') as `month`,
-                DATE_FORMAT(TO_TIMESTAMP(FROM_UNIXTIME(`ts`/1000)), 'dd') as `day`
+                DATE_FORMAT(TO_TIMESTAMP(FROM_UNIXTIME(`ts`/1000)), 'dd') as `day`,
+                DATE_FORMAT(TO_TIMESTAMP(FROM_UNIXTIME(`ts`/1000)), 'hh') as `hour`
             FROM {source}
             """
 
@@ -77,10 +78,11 @@ def stream_listen_events(t_env):
             `registration` BIGINT,
             `year` STRING,
             `month` STRING,
-            `day` STRING
-        ) PARTITIONED BY (`year`, `month`, `day`) WITH (
+            `day` STRING,
+            `hour` string
+        ) PARTITIONED BY (`year`, `month`, `day`, `hour`) WITH (
             'connector' = 'filesystem',
-            'path' = 's3://streaming-demo-project/outputs/{sink_table}',
+            'path' = 's3://{S3_BUCKET}/outputs/{sink_table}',
             'format' = 'parquet',
             'sink.rolling-policy.file-size' = '128MB',
             'sink.rolling-policy.rollover-interval' = '5 min',
@@ -153,10 +155,11 @@ def stream_auth_events(t_env):
             `success` BOOLEAN, 
             `year` STRING,
             `month` string, 
-            `day` string
-        ) PARTITIONED BY (`year`, `month`, `day`) WITH (
+            `day` string,
+            `hour` string
+        ) PARTITIONED BY (`year`, `month`, `day`, `hour`) WITH (
             'connector' = 'filesystem',
-            'path' = 's3://streaming-demo-project/outputs/{sink_table}',
+            'path' = 's3://{S3_BUCKET}/outputs/{sink_table}',
             'format' = 'parquet',
             'sink.rolling-policy.file-size' = '128MB',
             'sink.rolling-policy.rollover-interval' = '5 min',
@@ -237,13 +240,14 @@ def stream_page_view_events(t_env):
             `registration` BIGINT,
             `artist` STRING,
             `song` STRING,
-            `duration` DOUBLE 
+            `duration` DOUBLE,
             `year` STRING,
             `month` string, 
-            `day` string
-        ) PARTITIONED BY (`year`, `month`, `day`) WITH (
+            `day` string,
+            `hour` string
+        ) PARTITIONED BY (`year`, `month`, `day`, `hour`) WITH (
             'connector' = 'filesystem',
-            'path' = 's3://streaming-demo-project/outputs/{sink_table}',
+            'path' = 's3://{S3_BUCKET}/outputs/{sink_table}',
             'format' = 'parquet',
             'sink.rolling-policy.file-size' = '128MB',
             'sink.rolling-policy.rollover-interval' = '5 min',
@@ -312,13 +316,14 @@ def stream_status_change_events(t_env):
             `lastName` STRING,
             `firstName` STRING,
             `gender` STRING,
-            `registration` BIGINT
+            `registration` BIGINT,
             `year` STRING,
             `month` string, 
-            `day` string
-        ) PARTITIONED BY (`year`, `month`, `day`) WITH (
+            `day` string,
+            `hour` string
+        ) PARTITIONED BY (`year`, `month`, `day`, `hour`) WITH (
             'connector' = 'filesystem',
-            'path' = 's3://streaming-demo-project/outputs/{sink_table}',
+            'path' = 's3://{S3_BUCKET}/outputs/{sink_table}',
             'format' = 'parquet',
             'sink.rolling-policy.file-size' = '128MB',
             'sink.rolling-policy.rollover-interval' = '5 min',
