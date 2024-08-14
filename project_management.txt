@@ -1,38 +1,20 @@
-notes on flink project: 
 
-Setting up the kafka server: 
-Boot up ec2. Docker-compose up kafka shit, should be using local host since the eventsim is in the docker network 
-Boot up event sim with startup script from root
-View on port externalIP:9021 in my local browser
+Need to create dagster pipelines that read from s3 parquets to tables in redshift.
+Perhaps use a dagster sensor that looks for when the next directory partition is created, when it is, load the last partition. 
+Or can do easy way and just load the last hour every hour 
 
-I've got flink working. Need to create a script for consuming it from the kafka eventsim topics. Need to figure out the schema. Will use both the table and datastream api. Start with table api. 
+Once loaded into redshift, create dbt models that build out facts and dims. 
 
-Look to spark logic to see if i can grok the schema
+once those are good, lets set up metabase and create some viz. 
 
+Finally, we want to terraformize the whole thing so we can run a single terraform script to build all cloud resources and tear them down as well 
 
-NOTES JULY 28:
-Okay my word_count.py consumes the kafka topics from eventsim on the server. 
-We can basically do all our development locally now, figure out the data modelling, and then deploy to a cluster later. 
+Then, lets create a bunch fo markdown files describing the whole thing. Create a more involved architecture diagram as well.
 
 
 
 
-July 29: 
-running the python script standalone on the master node. trying to get to write to s3. so far getting the error:
-Caused by: java.lang.ClassNotFoundException: org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
-
-might need to add some Hadoop jar file. just add everything you can. 
-need to add the ip of the master node in order for it to get the kafka topics. 
 
 
-July 30: 
-remember to change the ip of hte kafka server in the docker-compose AND in the stream_all_evnets.py for hte create table statement
-remember to add the port 9092 for each of the nodes in the cluster.
 
-To try:
-try the 1.18 jars. apparently need to load them to lib folder, and then restart? i dont get it
-
-right now have the issue of an eternally running job with no logs. cant access the flink ui.
-
-next steps: read all the EMR docs, then flink on EMR docs. 
 

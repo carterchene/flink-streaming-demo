@@ -82,6 +82,8 @@ logs/
 # Jupyter Notebook
 .ipynb_checkpoints
 
+tmp*/
+
 .db
 # IPython
 profile_default/
