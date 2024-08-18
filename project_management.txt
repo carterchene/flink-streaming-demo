@@ -11,7 +11,20 @@ Finally, we want to terraformize the whole thing so we can run a single terrafor
 
 Then, lets create a bunch fo markdown files describing the whole thing. Create a more involved architecture diagram as well.
 
+when i come back:
 
+i need to fire up kafka and emr again, submit the flink job and stream to s3. 
+make sure to make the intervals larger so it doesnt create so many parquets. 
+make sure the schema has the time columns. 
+once its in the bucket, try to run the copy command in redshift to make sure it works. 
+once we have all the tables staged, we can shut off the flink job.
+
+when come back: 
+setup metabase, get it connected to redshift. create viz. have to fix onebigtable view
+
+once viz is good, we are pretty much done data modeling.
+just need to work on deployment, deploy dagster to an ec2. deploy metabase to an ec2 prob
+terraformize everything.
 
 
 

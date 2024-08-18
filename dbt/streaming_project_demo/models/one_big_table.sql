@@ -28,21 +28,23 @@ SELECT
     dim_location.longitude AS longitude,
 
     dim_date.date AS dateHour,
-    dim_date.dayOfMonth AS dayOfMonth,
-    dim_date.dayOfWeek AS dayOfWeek,
+    dim_date.day_of_month AS dayOfMonth,
+    dim_date.day_of_week AS dayOfWeek,
     
     dim_artists.latitude AS artistLatitude,
     dim_artists.longitude AS artistLongitude,
     dim_artists.name AS artistName
 FROM
     {{ ref('fact_streams') }}
-JOIN
+LEFT JOIN
     {{ ref('dim_users') }} ON fact_streams.userKey = dim_users.userKey
-JOIN
+LEFT JOIN
     {{ ref('dim_songs') }} ON fact_streams.songKey = dim_songs.songKey
-JOIN
+LEFT JOIN
     {{ ref('dim_location') }} ON fact_streams.locationKey = dim_location.locationKey
-JOIN
+LEFT JOIN
     {{ ref('dim_date') }} ON fact_streams.date_key = dim_date.date_key
-JOIN
+LEFT JOIN
     {{ ref('dim_artists') }} ON fact_streams.artistKey = dim_artists.artistKey
+
+

@@ -12,7 +12,8 @@ WITH RECURSIVE datetime_series(datetime) AS (
         datetime < '2029-12-31 23:00:00'::timestamp
 )
 SELECT
-    datetime date_key,
+    TO_CHAR("datetime", 'YYYYMMDDHH') as date_key, 
+    -- TO_CHAR(datetime, 'YYYYMMDDHH') as date_key,
     datetime AS datetime,
     DATE(datetime) AS date,
     EXTRACT(YEAR FROM datetime) AS year,
