@@ -1,0 +1,1 @@
+Follow [this](https://www.youtube.com/watch?v=yrrLxpz9J8c) video to setup and understand metabase.
