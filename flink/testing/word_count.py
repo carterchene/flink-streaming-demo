@@ -28,7 +28,7 @@ t_env = StreamTableEnvironment.create(s_env)
 # kafka_consumer = FlinkKafkaConsumer(
 #     topics='listen_events',
 #     deserialization_schema=deserialization_schema,
-#     properties={'bootstrap.servers': '3.98.123.24:9092'})
+#     properties={'bootstrap.servers': ':9092'})
 # 
 # ds = env.add_source(kafka_consumer)
 
