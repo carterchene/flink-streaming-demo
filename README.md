@@ -1,4 +1,4 @@
-# Streamify AWS
+# Streaming on AWS
 
 A data pipeline with Kafka, Amazon EMR, Flink, dbt, Docker, Dagster, Terraform, AWS, and Metabase!
 
